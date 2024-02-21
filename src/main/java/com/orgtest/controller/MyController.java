@@ -10,10 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -42,18 +39,15 @@ public class MyController {
     @GetMapping("/register-page")
     public String registerPage(Model model) {
         User user=new User();
-        model.addAttribute("userdata",user);
+        model.addAttribute("user",user);
         return "pages/register";
     }
 
     @PostMapping("/register-process")
-    public String registerPage(@Valid @ModelAttribute User user, BindingResult bindingResult, @RequestParam(name = "file") MultipartFile file,Model model, HttpSession session) throws IOException {
+    public String registerPage(@Valid @ModelAttribute("user") User user, BindingResult bindingResult, @RequestParam(name = "file") MultipartFile file, HttpSession session) throws IOException {
         if(bindingResult.hasErrors()){
-//            bindingResult.getSuppressedFields()
-//            bindingResult.getAllErrors().stream().forEach(System.out::println);
             bindingResult.getAllErrors().stream().map(msg->msg.getDefaultMessage()).forEach(System.out::println);
             System.out.println();
-            model.addAttribute("userdata",user);
             return "pages/register";
         }
         System.out.println(user.getUserFirstName());
@@ -111,6 +105,12 @@ public class MyController {
     @GetMapping("/access-denied-page")
     public String accessDeniedPage(){
         return "pages/accessdenied";
+    }
+
+    @DeleteMapping("/delete-process")
+    public String deleteProcess(@RequestParam(name = "userId")Long userId){
+        userService.deleteById(userId);
+        return "redirect:/dashboard-page";
     }
 
 }
