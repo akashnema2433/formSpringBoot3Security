@@ -1,5 +1,6 @@
 package com.orgtest.entities;
 
+//import javax.persistence.*;
 import jakarta.persistence.*;
 import lombok.*;
 

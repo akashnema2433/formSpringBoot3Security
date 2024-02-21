@@ -11,44 +11,73 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsService userDetailService(){
+    public UserDetailsService userDetailService() {
         return new UserDetailService();
     }
 
     @Bean
-    public AuthenticationProvider daoAuthenticationProvider(){
-        DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailService());
-        return provider;
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
     }
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors(cors->cors.disable())
-                .authenticationProvider(daoAuthenticationProvider())
-                .authorizeHttpRequests(request->
-                        request.requestMatchers("/dashboard-page","/getAll").hasAnyAuthority("ADMIN","CREATOR")
+        httpSecurity.cors(cors -> cors.disable())
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers("/dashboard-page", "/getAll").hasAnyAuthority("ADMIN", "CREATOR")
                                 .requestMatchers("/normal-page").hasAuthority("NORMAL")
-                                .requestMatchers("/public-page1","/public-page2","/register-page/**","/register-process")
+                                .requestMatchers("/public-page1", "/public-page2", "/register-process", "/register-page")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
-                .formLogin(form->form.loginPage("/login").permitAll()
+                .formLogin(form -> form.loginPage("/login")
                         .loginProcessingUrl("/login-process")
-                        .defaultSuccessUrl("/register-page/**"));
+                        .defaultSuccessUrl("/dashboard-page", true).permitAll())
+                .logout(
+                        logout -> logout
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                .permitAll()
+                );
         return httpSecurity.build();
     }
+
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.cors().and().csrf().disable()
+//
+//                .authorizeHttpRequests()
+//                .antMatchers("/admin/**")
+//                .hasAuthority("ADMIN")
+//                .antMatchers("/**","/register-page/**","/register-process")
+//                .permitAll()
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .formLogin()
+//                .loginPage("/login")
+//                .loginProcessingUrl("/login-process")
+//                .defaultSuccessUrl("/register-page");
+//        httpSecurity.authenticationProvider(authenticationProvider());
+//        return httpSecurity.build();
+//
+//    }
+
 
 }
