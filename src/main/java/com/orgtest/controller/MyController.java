@@ -4,10 +4,12 @@ import com.orgtest.entities.User;
 import com.orgtest.service.UserService;
 //import javax.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +47,15 @@ public class MyController {
     }
 
     @PostMapping("/register-process")
-    public String registerPage(@ModelAttribute User user, @RequestParam(name = "file") MultipartFile file,HttpSession session) throws IOException {
+    public String registerPage(@Valid @ModelAttribute User user, BindingResult bindingResult, @RequestParam(name = "file") MultipartFile file,Model model, HttpSession session) throws IOException {
+        if(bindingResult.hasErrors()){
+//            bindingResult.getSuppressedFields()
+//            bindingResult.getAllErrors().stream().forEach(System.out::println);
+            bindingResult.getAllErrors().stream().map(msg->msg.getDefaultMessage()).forEach(System.out::println);
+            System.out.println();
+            model.addAttribute("userdata",user);
+            return "pages/register";
+        }
         System.out.println(user.getUserFirstName());
         String currDateTime = (LocalDateTime.now() + "").replace(":", "-");
         if (!file.isEmpty()) {
@@ -76,16 +86,31 @@ public class MyController {
     }
 
     @PostMapping("/update-process")
-    public String updateUserProcess(@RequestParam(name = "userId")Long userId,@RequestParam(name = "firstName")String firstName, @RequestParam(name = "lastName")String lastName,@RequestParam(name = "password")String password,HttpSession session){
-        System.out.println(firstName+" "+lastName+" "+password);
+    public String updateUserProcess(@RequestParam(name = "userId")Long userId,@RequestParam(name = "firstName",required = false)String firstName, @RequestParam(name = "lastName",required = false)String lastName,@RequestParam(name = "password",required = false)String password,HttpSession session){
         User user=new User();
         user.setId(userId);
         user.setUserFirstName(firstName);
         user.setUserLastName(lastName);
-        user.setPassword(password);
+        if(user.getPassword()!=null&&user.getPassword().isBlank()!=true) {
+            user.setPassword(password);
+        }
         userService.update(user);
         session.setAttribute("message","Profile Successfully has been Updated!!");
         return "redirect:/dashboard-page";
+    }
+
+    @GetMapping("/private-page")
+    public String adminPage(){
+        return "pages/private";
+    }
+    @GetMapping("/normal-page")
+    public String normalPage(){
+        return "pages/normal";
+    }
+
+    @GetMapping("/access-denied-page")
+    public String accessDeniedPage(){
+        return "pages/accessdenied";
     }
 
 }
