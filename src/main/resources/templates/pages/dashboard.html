@@ -24,7 +24,7 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">
                 Update
             </button>
-            <form th:action="@{/delete-process}" >
+            <form th:action="@{/delete-process}" method="post">
                 <input type="hidden" th:value="${user.id}">
             <button type="submit" class="btn btn-danger">
                 Delete

@@ -107,10 +107,15 @@ public class MyController {
         return "pages/accessdenied";
     }
 
-    @DeleteMapping("/delete-process")
+    @PostMapping("/delete-process")
     public String deleteProcess(@RequestParam(name = "userId")Long userId){
         userService.deleteById(userId);
-        return "redirect:/dashboard-page";
+        return "redirect:/register-page";
+    }
+
+    @GetMapping("/public-page1")
+    public String publicPage1(){
+        return "public-page1";
     }
 
 }
