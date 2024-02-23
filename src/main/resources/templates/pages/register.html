@@ -23,7 +23,9 @@
                                     <div class="d-flex flex-row align-items-center mb-4">
                                         <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                         <div class="form-outline flex-fill mb-0">
-                                            <input type="text" name="userFirstName" id="form3Example1c" th:value="${user.userFirstName}" class="form-control"/>
+<!--                                            <input type="text" name="userFirstName" id="form3Example1c" th:value="${user.userFirstName}" class="form-control"/>-->
+<!--                                            if you use field attribute so that it does automatically give the attribute name no need to be specified-->
+                                            <input type="text" id="form3Example1c" th:field="*{userFirstName}" class="form-control"/>
                                             <label class="form-label" for="form3Example1c">Your Name</label>
                                             <p th:errors = "*{userFirstName}" class="text-danger"
                                                th:if="${#fields.hasErrors('userFirstName')}"></p>

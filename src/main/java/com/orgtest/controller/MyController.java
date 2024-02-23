@@ -113,9 +113,5 @@ public class MyController {
         return "redirect:/register-page";
     }
 
-    @GetMapping("/public-page1")
-    public String publicPage1(){
-        return "public-page1";
-    }
 
 }
