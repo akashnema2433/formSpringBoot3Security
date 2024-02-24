@@ -67,7 +67,6 @@ public class FrontController {
     @GetMapping("/getImagesfile")
     public String getImages(Model model) {
         List<FileModel> all = fileModelRepository.findAll();
-        System.out.println(all.get(2).getContent());
         model.addAttribute("filecontent", all);
         return "pages/viewimage";
     }

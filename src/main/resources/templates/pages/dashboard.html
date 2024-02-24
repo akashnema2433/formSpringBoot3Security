@@ -11,7 +11,7 @@
 
     <span class="badge text-bg-secondary text-center">Welcome, Admin Dashboard Page</span></h1>
     <div class="text-center">
-    <img th:src="@{'/media/'+${user.profile}}" class="rounded" alt="Avatar" style="width:200px">
+        <img th:src="@{'/media/'+${user.profile}}" class="rounded" alt="Avatar" style="width:200px">
     </div>
 
     <div class="card text-center">
@@ -20,29 +20,30 @@
         </div>
         <div class="card-body">
             <h5 class="card-title" th:text="${user.userFirstName+' '+user.userLastName}">Special title treatment</h5>
-            <p class="card-text" th:text="${user.role}">With supporting text below as a natural lead-in to additional content.</p>
+            <p class="card-text" th:text="${user.role}">With supporting text below as a natural lead-in to additional
+                content.</p>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">
                 Update
             </button>
             <form th:action="@{/delete-process}" method="post">
                 <input type="hidden" th:value="${user.id}">
-            <button type="submit" class="btn btn-danger">
-                Delete
-            </button>
+                <button type="submit" class="btn btn-danger">
+                    Delete
+                </button>
             </form>
         </div>
         <div class="card-footer text-body-secondary">
-           <p>Login id : <span th:text="${user.email}"></span> </p>
+            <p>Login id : <span th:text="${user.email}"></span></p>
         </div>
     </div>
     <br>
     <!-- Button trigger modal -->
-<!--    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">-->
-<!--        Profile-->
-<!--    </button>-->
+    <!--    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">-->
+    <!--        Profile-->
+    <!--    </button>-->
 
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#usersModal">
-       View Users
+        View Users
     </button>
     <!-- Profile -->
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -90,35 +91,51 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Update</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">First</th>
-                            <th scope="col">Last</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Active</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="e,iterator : ${usersList}">
-                            <th scope="row" th:text="${iterator.index+1}">1</th>
-                            <td th:text="${e.userFirstName}">Mark</td>
-                            <td th:text="${e.userLastName}">Otto</td>
-                            <td th:text="${e.role}">@mdo</td>
-                            <td th:text="${e.isEnabled}">@mdo</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div id="invoice">
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">First</th>
+                                <th scope="col">Last</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Active</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="e,iterator : ${usersList}">
+                                <th scope="row" th:text="${iterator.index+1}">1</th>
+                                <td th:text="${e.userFirstName}">Mark</td>
+                                <td th:text="${e.userLastName}">Otto</td>
+                                <td th:text="${e.role}">@mdo</td>
+                                <td th:text="${e.isEnabled}">@mdo</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
                 <div class="modal-footer">
+                    <button type="button" class="btn" onclick="printPDF('#invoice')">Print Invoice PDF</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>
+        function printPDF(selector) {
+            var content = document.querySelector(selector).innerHTML;
+            var printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write('<html><head><title>Print PDF</title></head><body>');
+            printWindow.document.write(content);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
 </section>
 </body>
 </html>
