@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>File Upload</title>
+</head>
+<body>
+<h1>File Upload</h1>
+<form th:action="@{/public/upload}" th:method="post" enctype="multipart/form-data">
+    <input type="file" name="files" id="files" multiple  />
+    <input type="submit" value="Upload" />
+</form>
+<h2>Selected Files:</h2>
+<ul id="selectedFiles"></ul>
+
+
+<script th:inline="javascript">
+    document.getElementById('files').addEventListener('change', function() {
+        var selectedFiles = document.getElementById('files').files;
+        var fileList = document.getElementById('selectedFiles');
+
+        // Iterate over newly selected files and add them to the list
+        for (var i = 0; i < selectedFiles.length; i++) {
+            var listItem = document.createElement('li');
+            listItem.textContent = selectedFiles[i].name;
+            fileList.appendChild(listItem);
+        }
+    });
+</script>
+</body>
+</html>

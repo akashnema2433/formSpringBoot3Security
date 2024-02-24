@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Display Image</title>
+</head>
+<body>
+<h1>Image</h1>
+<h1>Uploaded Files</h1>
+<div th:each="file : ${filecontent}">
+    <h2 th:text="${file.fileName}"></h2>
+    <img style="width:200px" th:src="'data:' + ${file.fileType} + ';base64,' + ${file.content}" />
+</div>
+</body>
+</html>

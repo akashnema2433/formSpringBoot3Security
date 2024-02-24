@@ -60,7 +60,6 @@ public class MyController {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             user.setProfile(profileName);
         }
-
         User result = userService.register(user);
         if(result!=null){
             session.setAttribute("message","Successfully registered!!...Please login now");

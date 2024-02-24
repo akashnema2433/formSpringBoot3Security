@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/getAll","/private-page").hasAnyAuthority("ADMIN", "CREATOR")
                                 .requestMatchers("/normal-page").hasAuthority("NORMAL")
-                                .requestMatchers("/public/public-page1", "/public/public-page2", "/register-process", "/register-page")
+                                .requestMatchers("/public/**", "/register-process", "/register-page")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
