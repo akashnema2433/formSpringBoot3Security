@@ -1,28 +1,18 @@
 package com.orgtest.controller;
 
 import com.orgtest.entities.FileModel;
+import com.orgtest.entities.SimpleUser;
 import com.orgtest.repositories.FileModelRepository;
-import com.orgtest.serviceImpl.ImageToBytesConverter;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
+import java.util.*;
 
 @Controller
 @RequestMapping("/public")
@@ -74,6 +64,27 @@ public class FrontController {
     @GetMapping("/public-page1")
     public String publicPage1() {
         return "public-page1";
+    }
+
+    @GetMapping("/registerp2")
+    public String registerPage2(Model model) {
+        SimpleUser user=new SimpleUser();
+        model.addAttribute("simpleUser",user);
+        return "register-page2";
+    }
+
+
+    @PostMapping("/submitForm")
+    @ResponseBody
+    public Map<String,String> submitForm(@RequestParam("username") String username, @RequestParam("email") String email) {
+        // Process the form data here (e.g., save to database, perform business logic, etc.)
+        System.out.println("Received form submission - Username: " + username + ", Email: " + email);
+
+        // Prepare response data
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Form submitted successfully!");
+
+        return response;
     }
 
 
