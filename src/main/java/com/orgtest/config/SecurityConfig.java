@@ -38,6 +38,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.disable())
+                .csrf(csrf->csrf.disable())
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/getAll","/private-page").hasAnyAuthority("ADMIN", "CREATOR")

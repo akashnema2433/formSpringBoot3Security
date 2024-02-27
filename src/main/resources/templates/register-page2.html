@@ -7,12 +7,20 @@
 </head>
 <body>
 <h1>Submit Form</h1>
-<form id="myForm" th:action="@{/public/submitForm}" method="post">
+<!--<form id="myForm" th:action="@{/public/submitForm}" method="post">-->
+<!--    <label for="username">Username:</label>-->
+<!--    <input type="text" id="username" name="username"><br>-->
+<!--    <label for="email">Email:</label>-->
+<!--    <input type="email" id="email" name="email"><br>-->
+<!--    <button type="submit">Submit</button>-->
+<!--</form>-->
+
+<form id="myForm">
     <label for="username">Username:</label>
     <input type="text" id="username" name="username"><br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email"><br>
-    <button type="submit">Submit</button>
+    <label for="password">Email:</label>
+    <input type="text" id="password" name="password"><br>
+    <button type="button" id="submitButton">Submit</button>
 </form>
 <div id="successMessage"></div>
 <!--v1 use ajax call-->
@@ -37,31 +45,92 @@
 <!--    });-->
 <!--</script>-->
 
-<!-- v2 use fetch api-->
+<!-- v2 use fetch api form data using @RequestParam in spring boot-->
+<!--<script>-->
+<!--    document.getElementById('myForm').addEventListener('submit', function(event) {-->
+<!--        event.preventDefault(); // Prevent form submission-->
+
+<!--        const formData = new FormData(this);-->
+
+<!--        fetch('/public/submitForm', {-->
+<!--            method: 'POST',-->
+<!--            body: formData-->
+<!--        })-->
+<!--        .then(response => {-->
+<!--            if (!response.ok) {-->
+<!--                throw new Error('Network response was not ok');-->
+<!--            }-->
+<!--            return response.json();-->
+<!--        })-->
+<!--        .then(data => {-->
+<!--            $('#successMessage').text(data.message);-->
+<!--        })-->
+<!--        .catch(error => {-->
+<!--            console.error('Error:', error);-->
+<!--            $('#successMessage').text('Error occurred: ' + error.message);-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
+<!--v1 send object use ajax call json data @RequestBody in spring boot-->
+<!--<script>-->
+<!--    $(document).ready(function() {-->
+<!--        $('#submitButton').click(function() {-->
+<!--            var formData = {-->
+<!--                username: $('#username').val(),-->
+<!--                password: $('#password').val()-->
+<!--            };-->
+<!--               console.log('Button clicked');-->
+<!--            $.ajax({-->
+<!--                type: 'POST',-->
+<!--                url: '/public/submitForm',-->
+<!--                contentType: 'application/json', // Set content type to JSON-->
+<!--                data: JSON.stringify(formData), // Convert formData object to JSON string-->
+<!--                success: function(response) {-->
+<!--                    $('#successMessage').text(response.message);-->
+<!--                },-->
+<!--                error: function(xhr, status, error) {-->
+<!--                    console.error('Error:', error);-->
+<!--                    $('#successMessage').text('Error occurred: ' + error);-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
+<!--v2 send object use fetch api call json data @RequestBody in spring boot-->
 <script>
-    document.getElementById('myForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('submitButton').addEventListener('click', function() {
+            var formData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
+            console.log('Button clicked');
 
-        const formData = new FormData(this);
-
-        fetch('/public/submitForm', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            $('#successMessage').text(data.message);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            $('#successMessage').text('Error occurred: ' + error.message);
+            fetch('/public/submitForm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('successMessage').innerText = data.message;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('successMessage').innerText = 'Error occurred: ' + error.message;
+            });
         });
     });
 </script>
+
 </body>
 </html>

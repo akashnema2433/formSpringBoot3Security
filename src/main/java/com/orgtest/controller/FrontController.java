@@ -4,7 +4,9 @@ import com.orgtest.entities.FileModel;
 import com.orgtest.entities.SimpleUser;
 import com.orgtest.repositories.FileModelRepository;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/public")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class FrontController {
 
     @Autowired
@@ -34,7 +37,7 @@ public class FrontController {
         for (MultipartFile file : files) {
             String contentType = file.getContentType();
             boolean image = contentType.startsWith("image");
-            if(image) {
+            if (image) {
                 String fileName = file.getOriginalFilename();
                 byte[] sourceFileContent = file.getBytes(); // Get byte array content directly
 
@@ -45,8 +48,8 @@ public class FrontController {
                 fileModel.setFileType(contentType);
                 fileModel.setContent(base64Content);
                 fileModels.add(fileModel);
-            }else {
-                System.out.println("This is media content " + contentType+" not allowed");
+            } else {
+                System.out.println("This is media content " + contentType + " not allowed");
             }
         }
         List<FileModel> fileModels1 = fileModelRepository.saveAll(fileModels);
@@ -68,17 +71,29 @@ public class FrontController {
 
     @GetMapping("/registerp2")
     public String registerPage2(Model model) {
-        SimpleUser user=new SimpleUser();
-        model.addAttribute("simpleUser",user);
+        SimpleUser user = new SimpleUser();
+        model.addAttribute("simpleUser", user);
         return "register-page2";
     }
 
 
+    //    @PostMapping("/submitForm")
+//    @ResponseBody
+//    public Map<String,String> submitForm(@RequestParam("username") String username, @RequestParam("email") String email) {
+//        // Process the form data here (e.g., save to database, perform business logic, etc.)
+//        System.out.println("Received form submission - Username: " + username + ", Email: " + email);
+//
+//        // Prepare response data
+//        Map<String, String> response = new HashMap<>();
+//        response.put("message", "Form submitted successfully!");
+//
+//        return response;
+//    }
     @PostMapping("/submitForm")
     @ResponseBody
-    public Map<String,String> submitForm(@RequestParam("username") String username, @RequestParam("email") String email) {
+    public Map<String, String> submitForm(@RequestBody SimpleUser user) {
         // Process the form data here (e.g., save to database, perform business logic, etc.)
-        System.out.println("Received form submission - Username: " + username + ", Email: " + email);
+        System.out.println("Received form submission - Username: " + user.getUsername() + ", Email: " + user.getPassword());
 
         // Prepare response data
         Map<String, String> response = new HashMap<>();
