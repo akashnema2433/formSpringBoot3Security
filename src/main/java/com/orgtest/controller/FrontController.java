@@ -2,11 +2,14 @@ package com.orgtest.controller;
 
 import com.orgtest.entities.FileModel;
 import com.orgtest.entities.SimpleUser;
+import com.orgtest.model.UserDTO;
 import com.orgtest.repositories.FileModelRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -103,8 +106,38 @@ public class FrontController {
     }
 
     @GetMapping("/table")
-    public String showTable(){
+    public String showTable() {
         return "showtable";
+    }
+
+    @GetMapping("/update-form")
+    public String updatePage(Model model) {
+
+        List<UserDTO> data = new ArrayList<>();
+        UserDTO userDTO1 = new UserDTO();
+        userDTO1.setId(1);
+        userDTO1.setName("Test");
+        userDTO1.setEmail("test@gmail.com");
+        data.add(userDTO1);
+
+        UserDTO userDTO2 = new UserDTO();
+        userDTO2.setId(2);
+        userDTO2.setName("Test");
+        userDTO2.setEmail("test@gmail.com");
+        data.add(userDTO2);
+
+        model.addAttribute("users", data);
+
+        return "update-form";
+    }
+
+    @PostMapping("/updateUser")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> updateUser(@RequestBody UserDTO userDTO) {
+        System.out.println(userDTO.getId() + " : " + userDTO.getName());
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Successfully update data!!");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }
