@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to Table</title>
+</head>
+<body>
+<table id="data-table" border="1">
+    <thead>
+    <tr>
+        <th>S.No</th>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="script.js"></script>
+</body>
+<script>
+    $(document).ready(function() {
+      // Mock JSON response
+      var mockResponse = {
+        "name": "John Doe",
+        "age": 30,
+        "email": "john.doe@example.com",
+        "address": {
+          "street": "123 Main St",
+          "city": "Anytown",
+          "zip": "12345"
+        }
+      };
+
+      // Call function to map JSON data to HTML table
+      mapJsonToTable(mockResponse);
+
+      // Function to map JSON data to HTML table
+      function mapJsonToTable(jsonData) {
+        var table = $('#data-table tbody');
+        var serialNumber = 1;
+        $.each(jsonData, function(key, value) {
+          if (typeof value === 'object') {
+            // If the value is an object, recursively call the function to handle nested objects
+            $.each(value, function(subKey, subValue) {
+              var row = $('<tr></tr>');
+              row.append($('<td></td>').text(serialNumber++));
+              row.append($('<td></td>').text(key + '.' + subKey));
+              row.append($('<td></td>').text(subValue));
+              table.append(row);
+            });
+          } else {
+            // Otherwise, simply append the key-value pair to the table
+            var row = $('<tr></tr>');
+            row.append($('<td></td>').text(serialNumber++));
+            row.append($('<td></td>').text(key));
+            row.append($('<td></td>').text(value));
+            table.append(row);
+          }
+        });
+      }
+    });
+
+</script>
+</html>

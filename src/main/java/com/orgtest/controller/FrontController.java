@@ -102,5 +102,9 @@ public class FrontController {
         return response;
     }
 
+    @GetMapping("/table")
+    public String showTable(){
+        return "showtable";
+    }
 
 }
