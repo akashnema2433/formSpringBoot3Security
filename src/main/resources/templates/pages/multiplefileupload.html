@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>File Upload</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h2>File Upload</h2>
+<form id="formId" th:object="${user}">
+    <input type="text" th:field="*{fullName}" placeholder="Enter your name">
+    <input type="text" th:field="*{description}" placeholder="Enter your description">
+    <input type="file" id="fileInput" multiple onchange="updateFileList(this)" placeholder="select post">
+    <button onclick="uploadFiles()">Submit</button>
+</form>
+<div id="fileList"></div>
+<div id="response"></div>
+<script>
+    var filesToUpload = [];
+
+    function updateFileList(input) {
+        var newFiles = Array.from(input.files);
+        filesToUpload = filesToUpload.concat(newFiles);
+        renderFileList();
+    }
+
+    function removeFile(index) {
+        filesToUpload.splice(index, 1);
+        renderFileList();
+    }
+
+    function renderFileList() {
+        var fileListDiv = document.getElementById('fileList');
+        fileListDiv.innerHTML = '';
+        for (var i = 0; i < filesToUpload.length; i++) {
+            var fileItem = document.createElement('div');
+            fileItem.innerHTML = filesToUpload[i].name + ' <button onclick="removeFile(' + i + ')">Remove</button>';
+            fileListDiv.appendChild(fileItem);
+        }
+    }
+
+    function uploadFiles() {
+        var formData = new FormData();
+
+        formData.append('fullName',document.getElementById('fullName').value);
+        formData.append('description',document.getElementById('description').value);
+
+        for (var i = 0; i < filesToUpload.length; i++) {
+            formData.append('files', filesToUpload[i]);
+        }
+        $.ajax({
+            url: '/public/dataprocess',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#response').text(response);
+            }
+        });
+    }
+</script>
+</body>
+</html>

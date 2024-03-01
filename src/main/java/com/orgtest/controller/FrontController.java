@@ -1,22 +1,35 @@
 package com.orgtest.controller;
 
-import com.orgtest.entities.FileModel;
-import com.orgtest.entities.SimpleUser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.orgtest.entities.*;
 import com.orgtest.model.UserDTO;
 import com.orgtest.repositories.FileModelRepository;
 
+import com.orgtest.repositories.MultiFilesUserRepo;
+import com.orgtest.repositories.PostsRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -26,6 +39,14 @@ public class FrontController {
 
     @Autowired
     private FileModelRepository fileModelRepository;
+
+    @Autowired
+    private PostsRepository postsRepository;
+
+    @Autowired
+    private MultiFilesUserRepo multiFilesUserRepo;
+
+
     private List<String> fileNames = new ArrayList<>();
 
     @GetMapping("/media")
@@ -33,7 +54,6 @@ public class FrontController {
         model.addAttribute("fileNames", fileNames);
         return "pages/uploadmedia";
     }
-
     @PostMapping("/upload")
     public String uploadModelsFiles(@RequestParam("files") MultipartFile[] files, Model model) throws IOException {
         List<FileModel> fileModels = new ArrayList<>();
@@ -60,6 +80,37 @@ public class FrontController {
         return "pages/viewimage";
     }
 
+    @GetMapping("/multipleFile")
+    public String multipleFileUploadPage(Model model) {
+        model.addAttribute("user",new MultiFileWithUser());
+        return "pages/multiplefileupload";
+    }
+
+
+    @PostMapping("/dataprocess")
+    @ResponseBody
+    public String uploadModelsFiles1(@ModelAttribute("user") MultiFileWithUser user,@RequestParam(value = "files",required = false) MultipartFile[] files) throws IOException {
+        System.out.println(user.getFullName());
+        user.setFullName(user.getFullName());
+        user.setDescription(user.getDescription());
+        MultiFileWithUser result = multiFilesUserRepo.save(user);
+        if(files!=null&&files.length>0 && !Arrays.stream(files).toList().isEmpty()) {
+            for (MultipartFile file : files) {
+                System.out.println(file.getOriginalFilename());
+                String originalFilename = file.getOriginalFilename();
+                Posts posts=new Posts();
+                posts.setPostURL(originalFilename);
+                posts.setMultiFileWithUser(result);
+                postsRepository.save(posts);
+            }
+            if(result!=null){
+                System.out.println("save successfully");
+            }
+        }else{
+            return "Please select files!!";
+        }
+        return "Successfully uploaded!! file : "+files.length;
+    }
     @GetMapping("/getImagesfile")
     public String getImages(Model model) {
         List<FileModel> all = fileModelRepository.findAll();
@@ -138,6 +189,20 @@ public class FrontController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "Successfully update data!!");
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("/gettest")
+    @ResponseBody
+    public JsonNode getTest() throws JsonProcessingException {
+        String url="https://tshc.gov.in/Hcdbs/caseDetails.jsp?casedet=WP/5207/2024";
+        ResponseEntity<String> forEntity = restTemplate.getForEntity(url, String.class);
+        System.out.println("call....");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(forEntity.getBody());
+        return root;
     }
 
 }
